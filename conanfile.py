@@ -19,11 +19,10 @@ class Rocos(ConanFile):
 
     # 从项目库获取本包需要构建的 rocos 源代码
     def source(self):
-        # pass
-        git = Git(self)
-        git.clone(url="https://github.com/Robocup-ssl-China/rocos.git", target=".")
-        git.checkout("main")
-    
+        pass
+        # git = Git(self)
+        # git.clone(url="https://github.com/Robocup-ssl-China/rocos.git", target=".")
+        # git.checkout("main")
 
     # 依赖库
     def requirements(self):
@@ -44,6 +43,7 @@ class Rocos(ConanFile):
         # 因为构建依赖库中没有预先编译好的二进制文件包需要 cmake ，所以 cmake 应该提前准备好
         # 在构建 rocos 中没有特别的版本需求，所以这里没有对 cmake 写进需求
 
+    def layout(self):
         cmake_layout(self)
 
     # 生成依赖项所需
@@ -103,13 +103,16 @@ cd ~ && git clone https://github.com/Robocup-ssl-China/rocos.git && cd rocos
 
 cp path/to/conanfile.py ~/rocos/conanfile.py
 
-conan install . --output-folder=. --build=missing # 安装依赖库，生成文件在 project_folder/build/Release/generators 下
+conan install . --build=missing # 安装依赖库，生成文件在 project_folder/build/Release/generators 下
 
 cd ./build/Release/
 
 source ./generators/conanbuild.sh # 进入提供的虚拟环境
 
-cmake ../.. -DCMAKE_TOOLCHAIN_FILE=generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release # 配置生成的工具链
+# cmake>=3.23
+cmake --preset conan-release
+# cmake<3.23
+cmake <path> -G "Unix Makefiles" -DCMAKE_TOOLCHAIN_FILE=generators/conan_toolchain.cmake  -DCMAKE_POLICY_DEFAULT_CMP0091=NEW -DCMAKE_BUILD_TYPE=Release
 
 cmake --build . # 构建成功后所有编译出来的内容在 project_folder/build/Release
 
